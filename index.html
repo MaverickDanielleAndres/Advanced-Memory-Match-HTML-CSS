@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Professional Memory Match</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0a0a1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 1200px;
+            background: #121220;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 1px solid #2a2a4a;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: #bb86fc;
+            text-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
+        }
+        
+        .subtitle {
+            color: #03dac6;
+            font-size: 1.1rem;
+        }
+        
+        .controls-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #1e1e35;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #33335a;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 160px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #bb86fc;
+            font-size: 0.95rem;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #44447a;
+            background: #2a2a4a;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: #bb86fc;
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+        }
+        
+        button {
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background: #3a3a5a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #ffffff;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #7a21db, #3585ff);
+            box-shadow: 0 7px 20px rgba(106, 17, 203, 0.6);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #03dac6, #00b3a4);
+            color: #000000;
+            box-shadow: 0 5px 15px rgba(3, 218, 198, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #13eae6, #10c3b4);
+            box-shadow: 0 7px 20px rgba(3, 218, 198, 0.6);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: #1e1e35;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #33335a;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #03dac6;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #bb86fc;
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+        }
+        
+        .game-board-container {
+            position: relative;
+            margin: 0 auto 20px;
+            border: 2px solid #2a2a4a;
+            border-radius: 10px;
+            background: #0d0d1a;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-board {
+            display: grid;
+            gap: 7px;
+            padding: 12px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+        
+        .card {
+            aspect-ratio: 1;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card.matched {
+            transform: rotateY(180deg);
+            box-shadow: 0 0 20px rgba(187, 134, 252, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(187, 134, 252, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(187, 134, 252, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(187, 134, 252, 0); }
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #2a2a4a, #1e1e35);
+            transform: rotateY(180deg);
+            border: 2px solid #6a11cb;
+            box-shadow: inset 0 0 15px rgba(106, 17, 203, 0.5);
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #1e1e35, #0d0d1a);
+            color: #bb86fc;
+            border: 2px solid #2a2a4a;
+            box-shadow: 0 0 10px rgba(106, 17, 203, 0.3);
+        }
+        
+        .card-content {
+            font-size: 2.5rem; /* Increased size */
+            width: 70%; /* Occupies 70% of the square */
+            height: 70%; /* Occupies 70% of the square */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .win-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 26, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            backdrop-filter: blur(5px);
+        }
+        
+        .win-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .win-content {
+            background: #1e1e35;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #6a11cb;
+            box-shadow: 0 0 40px rgba(106, 17, 203, 0.6);
+        }
+        
+        .win-title {
+            font-size: 2.5rem;
+            color: #bb86fc;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(187, 134, 252, 0.8);
+        }
+        
+        .win-stats {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 2;
+            color: #03dac6;
+        }
+        
+        .win-stats p {
+            margin: 10px 0;
+        }
+        
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        
+        .star {
+            font-size: 2.2rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: starPulse 2s infinite;
+        }
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
+        }
+        
+        .star.empty {
+            color: #555;
+        }
+        
+        .score-history {
+            background: #121220;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #33335a;
+        }
+        
+        .score-history h3 {
+            color: #bb86fc;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        
+        .scores-list {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #2a2a4a;
+            font-size: 0.9rem;
+        }
+        
+        .score-item:last-child {
+            border-bottom: none;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+        
+        .zoom-btn {
+            padding: 6px 12px;
+            background: #2a2a4a;
+            border: 1px solid #44447a;
+            color: #03dac6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .zoom-btn:hover {
+            background: #3a3a5a;
+        }
+        
+        @media (max-width: 992px) {
+            .game-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls-panel {
+                flex-direction: column;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+            
+            .game-container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .stat-box {
+                min-width: 90px;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            
+            .win-content {
+                padding: 25px 15px;
+            }
+            
+            .win-title {
+                font-size: 2rem;
+            }
+            
+            .win-stats {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .win-title {
+                font-size: 1.8rem;
+            }
+            
+            .stars {
+                gap: 8px;
+            }
+            
+            .star {
+                font-size: 1.8rem;
+            }
+            
+            .control-group {
+                min-width: 140px;
+            }
+            
+            .card-content {
+                font-size: 2rem; /* Adjust for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Advanced Memory Match</h1>
+            <p class="subtitle">Professional Memory Challenge with Scoring System</p>
+        </header>
+        
+        <div class="controls-panel">
+            <div class="control-group">
+                <label for="level">Grid Size</label>
+                <select id="level">
+                    <option value="2x2">2x2 (Beginner)</option>
+                    <option value="2x3">2x3</option>
+                    <option value="3x4">3x4</option>
+                    <option value="4x4" selected>4x4 (Intermediate)</option>
+                    <option value="4x5">4x5</option>
+                    <option value="5x6">5x6</option>
+                    <option value="6x6">6x6 (Advanced)</option>
+                    <option value="6x8">6x8</option>
+                    <option value="8x8">8x8 (Expert)</option>
+                    <option value="8x10">8x10</option>
+                    <option value="10x10">10x10 (Master)</option>
+                    <option value="10x12">10x12</option>
+                    <option value="12x12">12x12 (Ultimate)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="category">Category</label>
+                <select id="category">
+                    <option value="symbols">Symbols</option>
+                    <option value="letters">Letters</option>
+                    <option value="numbers">Numbers</option>
+                    <option value="geometric">Geometric Shapes</option>
+                    <option value="flags">Country Flags</option>
+                    <option value="logos">Logos</option>
+                    <option value="emojis" selected>Emojis</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="timeLimit">Time Limit</label>
+                <select id="timeLimit">
+                    <option value="60">1 Minute</option>
+                    <option value="120">2 Minutes</option>
+                    <option value="300" selected>5 Minutes</option>
+                    <option value="600">10 Minutes</option>
+                    <option value="0">No Limit</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="startBtn" class="btn-primary">Start Game</button>
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="resetBtn">Reset Game</button>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Time</div>
+                <div id="timer" class="stat-value">00:00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Moves</div>
+                <div id="moves" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Matches</div>
+                <div id="matches" class="stat-value">0/0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Score</div>
+                <div id="score" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Top Score</div>
+                <div id="topScore" class="stat-value">0</div>
+            </div>
+        </div>
+        
+        <div class="game-board-container">
+            <div class="game-board" id="gameBoard"></div>
+        </div>
+        
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomOut">-</button>
+            <button class="zoom-btn" id="zoomIn">+</button>
+            <button class="zoom-btn" id="zoomReset">Reset Zoom</button>
+        </div>
+        
+        <div class="score-history">
+            <h3>Recent Scores</h3>
+            <div class="scores-list" id="scoresList"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="hintBtn" class="btn-secondary">Hint</button>
+            <button id="pauseBtn">Pause</button>
+        </div>
+        
+        <div class="win-screen" id="winScreen">
+            <div class="win-content">
+                <h2 class="win-title">Congratulations!</h2>
+                <div class="win-stats">
+                    <p>Time: <span id="finalTime">00:00</span></p>
+                    <p>Moves: <span id="finalMoves">0</span></p>
+                    <p>Score: <span id="finalScore">0</span></p>
+                    <p>Top Score: <span id="finalTopScore">0</span></p>
+                    <p>Grid Size: <span id="finalLevel">4x4</span></p>
+                    <p>Category: <span id="finalCategory">Symbols</span></p>
+                </div>
+                <div class="stars" id="stars">
+                    <div class="star">★</div>
+                    <div class="star">★</div>
+                    <div class="star">★</div>
+                </div>
+                <button id="playAgainBtn" class="btn-primary">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MemoryGame {
+            constructor() {
+                this.gameBoard = document.getElementById('gameBoard');
+                this.timerElement = document.getElementById('timer');
+                this.movesElement = document.getElementById('moves');
+                this.matchesElement = document.getElementById('matches');
+                this.scoreElement = document.getElementById('score');
+                this.topScoreElement = document.getElementById('topScore');
+                this.startBtn = document.getElementById('startBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.playAgainBtn = document.getElementById('playAgainBtn');
+                this.hintBtn = document.getElementById('hintBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.winScreen = document.getElementById('winScreen');
+                this.finalTimeElement = document.getElementById('finalTime');
+                this.finalMovesElement = document.getElementById('finalMoves');
+                this.finalScoreElement = document.getElementById('finalScore');
+                this.finalTopScoreElement = document.getElementById('finalTopScore');
+                this.finalLevelElement = document.getElementById('finalLevel');
+                this.finalCategoryElement = document.getElementById('finalCategory');
+                this.starsElement = document.getElementById('stars');
+                this.levelSelect = document.getElementById('level');
+                this.categorySelect = document.getElementById('category');
+                this.difficultySelect = document.getElementById('difficulty');
+                this.timeLimitSelect = document.getElementById('timeLimit');
+                this.scoresList = document.getElementById('scoresList');
+                this.zoomInBtn = document.getElementById('zoomIn');
+                this.zoomOutBtn = document.getElementById('zoomOut');
+                this.zoomResetBtn = document.getElementById('zoomReset');
+                
+                this.cards = [];
+                this.flippedCards = [];
+                this.matchedPairs = 0;
+                this.totalPairs = 0;
+                this.moves = 0;
+                this.score = 0;
+                this.topScore = localStorage.getItem('memoryTopScore') || 0;
+                this.timer = 0;
+                this.timerInterval = null;
+                this.isGameActive = false;
+                this.isPaused = false;
+                this.currentLevel = '4x4';
+                this.currentCategory = 'emojis';
+                this.currentDifficulty = 'medium';
+                this.currentTimeLimit = 300;
+                this.hintsUsed = 0;
+                this.boardScale = 1;
+                this.recentScores = JSON.parse(localStorage.getItem('memoryRecentScores')) || [];
+                this.timeLimitReached = false;
+                
+                // Professional categories with added emojis
+                this.categories = {
+                    symbols: ['★', '❤', '♦', '♣', '♠', '☀', '☁', '☂', '☃', '☄', '☎', '☑', '☢', '☣', '☮', '☯', '☸', '☹', '☺', '♀', '♂', '♠', '♣', '♥', '♦', '♩', '♪', '♫', '♬', '♭', '♮', '♯'],
+                    letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+                    numbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                    geometric: ['▲', '●', '■', '◆', '★', '⬟', '⯃', '⯁', '⯂', '⯄', '⯅', '⯆'],
+                    flags: ['🇺🇸', '🇬🇧', '🇫🇷', '🇩🇪', '🇯🇵', '🇨🇳', '🇮🇳', '🇧🇷', '🇷🇺', '🇨🇦', '🇦🇺', '🇰🇷'],
+                    logos: ['♔', '♕', '♖', '♗', '♘', '♙', '♚', '♛', '♜', '♝', '♞', '♟'],
+                    emojis: ['😀', '😂', '🥰', '😎', '🤩', '🥳', '😭', '😡', '🤯', '🥶', '😱', '👻', '👾', '🤖', '👋', '👍', '👏', '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵']
+                };
+                
+                this.difficultySettings = {
+                    easy: { timeBonus: 200, moveBonus: 100 },
+                    medium: { timeBonus: 150, moveBonus: 75 },
+                    hard: { timeBonus: 100, moveBonus: 50 }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.updateTopScore();
+                this.displayRecentScores();
+                this.startNewGame();
+            }
+            
+            setupEventListeners() {
+                this.startBtn.addEventListener('click', () => this.startNewGame());
+                this.resetBtn.addEventListener('click', () => this.resetGame());
+                this.playAgainBtn.addEventListener('click', () => this.startNewGame());
+                this.hintBtn.addEventListener('click', () => this.useHint());
+                this.pauseBtn.addEventListener('click', () => this.togglePause());
+                
+                this.zoomInBtn.addEventListener('click', () => this.zoomBoard(0.1));
+                this.zoomOutBtn.addEventListener('click', () => this.zoomBoard(-0.1));
+                this.zoomResetBtn.addEventListener('click', () => this.resetZoom());
+            }
+            
+            startNewGame() {
+                this.currentLevel = this.levelSelect.value;
+                this.currentCategory = this.categorySelect.value;
+                this.currentDifficulty = this.difficultySelect.value;
+                this.currentTimeLimit = parseInt(this.timeLimitSelect.value);
+                this.resetGame();
+                this.setupGameBoard();
+                this.startTimer();
+                this.isGameActive = true;
+                this.isPaused = false;
+                this.timeLimitReached = false;
+                this.pauseBtn.textContent = 'Pause';
+                this.winScreen.classList.remove('show');
+            }
+            
+            resetGame() {
+                this.flippedCards = [];
+                this.matchedPairs = 0;
+                this.moves = 0;
+                this.score = 0;
+                this.timer = 0;
+                this.hintsUsed = 0;
+                this.updateStats();
+                
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                
+                this.gameBoard.innerHTML = '';
+            }
+            
+            setupGameBoard() {
+                const [rows, cols] = this.currentLevel.split('x').map(Number);
+                
+                this.totalPairs = (rows * cols) / 2;
+                this.matchesElement.textContent = `${this.matchedPairs}/${this.totalPairs}`;
+                
+                this.gameBoard.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                
+                // Get symbols for this category and game
+                const categorySymbols = this.categories[this.currentCategory];
+                const gameSymbols = [...categorySymbols].sort(() => Math.random() - 0.5).slice(0, this.totalPairs);
+                const cardPairs = [...gameSymbols, ...gameSymbols];
+                const shuffledCards = [...cardPairs].sort(() => Math.random() - 0.5);
+                
+                this.cards = [];
+                
+                shuffledCards.forEach((symbol, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.dataset.value = symbol;
+                    
+                    const cardFront = document.createElement('div');
+                    cardFront.className = 'card-front';
+                    
+                    const cardFrontContent = document.createElement('div');
+                    cardFrontContent.className = 'card-content';
+                    cardFrontContent.textContent = symbol;
+                    cardFront.appendChild(cardFrontContent);
+                    
+                    const cardBack = document.createElement('div');
+                    cardBack.className = 'card-back';
+                    
+                    const cardBackContent = document.createElement('div');
+                    cardBackContent.className = 'card-content';
+                    cardBackContent.textContent = '?';
+                    cardBack.appendChild(cardBackContent);
+                    
+                    card.appendChild(cardFront);
+                    card.appendChild(cardBack);
+                    
+                    card.addEventListener('click', () => this.flipCard(card));
+                    
+                    this.gameBoard.appendChild(card);
+                    this.cards.push(card);
+                });
+            }
+            
+            flipCard(card) {
+                if (!this.isGameActive || this.isPaused || 
+                    card.classList.contains('flipped') || 
+                    card.classList.contains('matched') ||
+                    this.flippedCards.length === 2) {
+                    return;
+                }
+                
+                card.classList.add('flipped');
+                this.flippedCards.push(card);
+                
+                if (this.flippedCards.length === 2) {
+                    this.moves++;
+                    this.updateStats();
+                    this.checkForMatch();
+                }
+            }
+            
+            checkForMatch() {
+                const [card1, card2] = this.flippedCards;
+                const isMatch = card1.dataset.value === card2.dataset.value;
+                
+                if (isMatch) {
+                    this.handleMatch();
+                } else {
+                    this.handleMismatch();
+                }
+            }
+            
+            handleMatch() {
+                this.flippedCards.forEach(card => {
+                    card.classList.add('matched');
+                });
+                
+                this.matchedPairs++;
+                this.matchesElement.textContent = `${this.matchedPairs}/${this.totalPairs}`;
+                
+                // Calculate score for match
+                const baseScore = 100;
+                const difficultyBonus = this.difficultySettings[this.currentDifficulty].moveBonus;
+                const movePenalty = Math.max(0, 10 - this.moves);
+                const matchScore = baseScore + difficultyBonus + movePenalty;
+                this.score += matchScore;
+                
+                this.flippedCards = [];
+                this.updateStats();
+                
+                if (this.matchedPairs === this.totalPairs) {
+                    this.endGame();
+                }
+            }
+            
+            handleMismatch() {
+                setTimeout(() => {
+                    this.flippedCards.forEach(card => {
+                        card.classList.remove('flipped');
+                    });
+                    this.flippedCards = [];
+                }, 1000);
+            }
+            
+            useHint() {
+                if (!this.isGameActive || this.isPaused || this.hintsUsed >= 3) return;
+                
+                this.hintsUsed++;
+                this.score = Math.max(0, this.score - 50); // Penalty for using hint
+                this.updateStats();
+                
+                // Find unmatched cards
+                const unmatchedCards = this.cards.filter(card => 
+                    !card.classList.contains('matched') && 
+                    !card.classList.contains('flipped')
+                );
+                
+                if (unmatchedCards.length >= 2) {
+                    // Group cards by value
+                    const groupedCards = {};
+                    unmatchedCards.forEach(card => {
+                        const value = card.dataset.value;
+                        if (!groupedCards[value]) {
+                            groupedCards[value] = [];
+                        }
+                        groupedCards[value].push(card);
+                    });
+                    
+                    // Find a pair
+                    for (const value in groupedCards) {
+                        if (groupedCards[value].length >= 2) {
+                            const card1 = groupedCards[value][0];
+                            const card2 = groupedCards[value][1];
+                            
+                            // Temporarily flip cards
+                            card1.classList.add('flipped');
+                            card2.classList.add('flipped');
+                            
+                            // Flip cards back after delay
+                            setTimeout(() => {
+                                if (!card1.classList.contains('matched')) {
+                                    card1.classList.remove('flipped');
+                                }
+                                if (!card2.classList.contains('matched')) {
+                                    card2.classList.remove('flipped');
+                                }
+                            }, 1500);
+                            
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            togglePause() {
+                if (!this.isGameActive) return;
+                
+                this.isPaused = !this.isPaused;
+                this.pauseBtn.textContent = this.isPaused ? 'Resume' : 'Pause';
+                
+                if (this.isPaused) {
+                    clearInterval(this.timerInterval);
+                } else {
+                    this.startTimer();
+                }
+            }
+            
+            startTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+                
+                this.timerInterval = setInterval(() => {
+                    if (!this.isPaused) {
+                        this.timer++;
+                        this.updateTimer();
+                        
+                        // Check if time limit is reached
+                        if (this.currentTimeLimit > 0 && this.timer >= this.currentTimeLimit && !this.timeLimitReached) {
+                            this.timeLimitReached = true;
+                            this.endGame(true);
+                        }
+                    }
+                }, 1000);
+            }
+            
+            updateTimer() {
+                const minutes = Math.floor(this.timer / 60).toString().padStart(2, '0');
+                const seconds = (this.timer % 60).toString().padStart(2, '0');
+                this.timerElement.textContent = `${minutes}:${seconds}`;
+            }
+            
+            updateStats() {
+                this.movesElement.textContent = this.moves;
+                this.scoreElement.textContent = this.score;
+                this.topScoreElement.textContent = this.topScore;
+            }
+            
+            updateTopScore() {
+                this.topScoreElement.textContent = this.topScore;
+            }
+            
+            endGame(timeLimitReached = false) {
+                this.isGameActive = false;
+                clearInterval(this.timerInterval);
+                
+                if (timeLimitReached) {
+                    this.finalTimeElement.textContent = "Time's Up!";
+                    this.finalMovesElement.textContent = this.moves;
+                    this.finalScoreElement.textContent = this.score;
+                    this.finalTopScoreElement.textContent = this.topScore;
+                    this.finalLevelElement.textContent = this.currentLevel;
+                    this.finalCategoryElement.textContent = this.categorySelect.options[this.categorySelect.selectedIndex].text;
+                    
+                    document.querySelector('.win-title').textContent = "Time's Up!";
+                    document.querySelector('.win-stats').innerHTML = `
+                        <p>Time: <span id="finalTime">Time's Up!</span></p>
+                        <p>Moves: <span id="finalMoves">${this.moves}</span></p>
+                        <p>Score: <span id="finalScore">${this.score}</span></p>
+                        <p>Top Score: <span id="finalTopScore">${this.topScore}</span></p>
+                        <p>Grid Size: <span id="finalLevel">${this.currentLevel}</span></p>
+                        <p>Category: <span id="finalCategory">${this.categorySelect.options[this.categorySelect.selectedIndex].text}</span></p>
+                    `;
+                    
+                    this.starsElement.innerHTML = '';
+                } else {
+                    const timeBonus = Math.max(0, (300 - this.timer) * this.difficultySettings[this.currentDifficulty].timeBonus / 100);
+                    const moveBonus = Math.max(0, (this.totalPairs * 2 - this.moves) * this.difficultySettings[this.currentDifficulty].moveBonus);
+                    const finalScore = this.score + timeBonus + moveBonus;
+                    
+                    this.score = Math.round(finalScore);
+                    if (this.score > this.topScore) {
+                        this.topScore = this.score;
+                        localStorage.setItem('memoryTopScore', this.topScore);
+                    }
+                    
+                    this.saveRecentScore();
+                    
+                    this.finalTimeElement.textContent = this.timerElement.textContent;
+                    this.finalMovesElement.textContent = this.moves;
+                    this.finalScoreElement.textContent = this.score;
+                    this.finalTopScoreElement.textContent = this.topScore;
+                    this.finalLevelElement.textContent = this.currentLevel;
+                    this.finalCategoryElement.textContent = this.categorySelect.options[this.categorySelect.selectedIndex].text;
+                    
+                    this.calculateStars();
+                    
+                    document.querySelector('.win-title').textContent = "Congratulations!";
+                    document.querySelector('.win-stats').innerHTML = `
+                        <p>Time: <span id="finalTime">${this.timerElement.textContent}</span></p>
+                        <p>Moves: <span id="finalMoves">${this.moves}</span></p>
+                        <p>Score: <span id="finalScore">${this.score}</span></p>
+                        <p>Top Score: <span id="finalTopScore">${this.topScore}</span></p>
+                        <p>Grid Size: <span id="finalLevel">${this.currentLevel}</span></p>
+                        <p>Category: <span id="finalCategory">${this.categorySelect.options[this.categorySelect.selectedIndex].text}</span></p>
+                    `;
+                }
+                
+                this.winScreen.classList.add('show');
+                this.updateTopScore();
+                this.displayRecentScores();
+            }
+            
+            saveRecentScore() {
+                const scoreData = {
+                    score: this.score,
+                    level: this.currentLevel,
+                    category: this.categorySelect.options[this.categorySelect.selectedIndex].text,
+                    date: new Date().toLocaleDateString()
+                };
+                
+                this.recentScores.unshift(scoreData);
+                if (this.recentScores.length > 10) {
+                    this.recentScores.pop();
+                }
+                
+                localStorage.setItem('memoryRecentScores', JSON.stringify(this.recentScores));
+            }
+            
+            displayRecentScores() {
+                this.scoresList.innerHTML = '';
+                this.recentScores.slice(0, 5).forEach((scoreData, index) => {
+                    const scoreItem = document.createElement('div');
+                    scoreItem.className = 'score-item';
+                    scoreItem.innerHTML = `
+                        <span>${index + 1}. ${scoreData.score} pts</span>
+                        <span>${scoreData.level} - ${scoreData.category}</span>
+                        <span>${scoreData.date}</span>
+                    `;
+                    this.scoresList.appendChild(scoreItem);
+                });
+            }
+            
+            calculateStars() {
+                const stars = this.starsElement.querySelectorAll('.star');
+                let starCount = 1;
+                
+                const maxScore = this.totalPairs * 200;
+                const scorePercentage = this.score / maxScore;
+                
+                if (scorePercentage > 0.8) {
+                    starCount = 3;
+                } else if (scorePercentage > 0.5) {
+                    starCount = 2;
+                }
+                
+                stars.forEach((star, index) => {
+                    if (index < starCount) {
+                        star.textContent = '★';
+                        star.classList.remove('empty');
+                    } else {
+                        star.textContent = '☆';
+                        star.classList.add('empty');
+                    }
+                });
+            }
+            
+            zoomBoard(factor) {
+                this.boardScale = Math.max(0.5, Math.min(2, this.boardScale + factor));
+                this.gameBoard.style.transform = `scale(${this.boardScale})`;
+            }
+            
+            resetZoom() {
+                this.boardScale = 1;
+                this.gameBoard.style.transform = 'scale(1)';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new MemoryGame();
+        });
+    </script>
+</body>
+</html>
