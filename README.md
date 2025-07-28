@@ -1,5 +1,5 @@
 <img width="630" height="836" alt="image" src="https://github.com/user-attachments/assets/fa2ae45a-4281-45e2-a778-82f508dcc6b9" />
-```markdown
+
 # Advanced Professional Memory Match Game
 
 A sophisticated memory card matching game with customizable grid sizes, multiple categories, scoring system, and professional dark theme design.
@@ -73,4 +73,4 @@ The game can be easily customized by modifying:
 - CSS colors and styling
 - Grid size options
 - Time limit options
-```
+
